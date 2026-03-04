@@ -1,5 +1,4 @@
 use trod::db::Database;
-use std::path::Path;
 use tempfile::NamedTempFile;
 
 fn test_db() -> Database {
