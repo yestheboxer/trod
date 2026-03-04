@@ -1,5 +1,6 @@
 mod cli;
 mod db;
+mod tui;
 
 use anyhow::Result;
 use clap::Parser;
@@ -67,17 +68,22 @@ fn main() -> Result<()> {
             eprintln!("Import not yet implemented");
         }
         None => {
-            // TUI mode — will be implemented in Task 5
             let db = open_db(&cli)?;
             let entries = db.list_recent(cli.limit.unwrap_or(500))?;
-            if cli.print {
-                // Will be replaced by TUI in Task 5
-                if let Some(first) = entries.first() {
-                    println!("{}", first.path);
+            if entries.is_empty() {
+                eprintln!("No directory history yet. cd around and trod will remember.");
+                return Ok(());
+            }
+            let picker = tui::TuiPicker::new(entries, cli.query.clone());
+            match picker.run()? {
+                Some(path) => {
+                    if cli.print {
+                        println!("{}", path);
+                    } else {
+                        println!("{}", path);
+                    }
                 }
-            } else {
-                eprintln!("TUI not yet implemented. Use 'trod list' for now.");
-                print_list(&entries);
+                None => {}
             }
         }
     }
