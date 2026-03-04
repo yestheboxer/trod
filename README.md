@@ -2,21 +2,23 @@
 
 > Persistent directory history with an interactive picker. Stop thinking about directory navigation — just `cd` around. Trod remembers everything.
 
-**trod** tracks every directory you visit and gives you a fuzzy-searchable TUI to jump back. It's the spiritual successor to [dirhistory](https://github.com/madsen/dirhistory), reimagined in Rust.
+**trod** tracks every directory you visit and gives you a fuzzy-searchable TUI to jump back. Written in Rust.
 
 ## Install
+
+### Homebrew
+
+```
+brew install yestheboxer/trod/trod
+```
+
+### Cargo
 
 ```
 cargo install trod
 ```
 
-Or with Homebrew (coming soon):
-
-```
-brew install trod
-```
-
-## Setup
+## Shell Setup
 
 Add to your `~/.zshrc`:
 
@@ -31,9 +33,9 @@ eval "$(trod init bash)"
 ```
 
 This gives you:
-- Automatic directory tracking on every `cd`
-- `td` alias for `trod`
-- **Ctrl-G** keybinding to launch the picker
+- **Automatic tracking** — every `cd` is recorded, no extra steps
+- **`td` alias** — shorthand for `trod`
+- **Ctrl-G** — keybinding to launch the interactive picker from anywhere
 
 ## Usage
 
@@ -45,6 +47,13 @@ td list         # Print history to stdout
 td stats        # Show usage statistics
 td forget /path # Remove a path from history
 td clean        # Prune deleted directories
+```
+
+### Shell Integration Commands
+
+```
+trod init zsh   # Output zsh integration code
+trod init bash  # Output bash integration code
 ```
 
 ## How it compares to zoxide
