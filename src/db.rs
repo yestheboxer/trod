@@ -215,7 +215,4 @@ impl Database {
         Ok(result.into_iter().next())
     }
 
-    pub fn all_entries(&self) -> Result<Vec<DirEntry>> {
-        self.list_recent(10000)
-    }
 }

@@ -63,6 +63,9 @@ fn main() -> Result<()> {
             if let Some(top) = &stats.most_visited {
                 eprintln!("Most visited:        {} ({} visits)", top.path, top.visit_count);
             }
+            if let Some(oldest) = &stats.oldest_entry {
+                eprintln!("Oldest entry:        {} (since {})", oldest.path, relative_time(oldest.first_visited));
+            }
         }
         Some(Command::Import { source: _ }) => {
             eprintln!("Import not yet implemented");
