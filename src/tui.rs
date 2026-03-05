@@ -2,8 +2,7 @@ use crate::db::DirEntry;
 use anyhow::Result;
 use crossterm::{
     event::{self, Event, KeyCode, KeyEventKind},
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
-    ExecutableCommand,
+    terminal::{disable_raw_mode, enable_raw_mode},
 };
 use fuzzy_matcher::skim::SkimMatcherV2;
 use fuzzy_matcher::FuzzyMatcher;
@@ -11,7 +10,8 @@ use ratatui::{
     prelude::*,
     widgets::{Block, Borders, List, ListItem, ListState, Paragraph},
 };
-use std::io::stdout;
+use std::fs::File;
+use std::io::Write;
 
 pub struct TuiPicker {
     entries: Vec<DirEntry>,
@@ -80,9 +80,12 @@ impl TuiPicker {
     }
 
     pub fn run(mut self) -> Result<Option<String>> {
+        // Use /dev/tty for TUI rendering so stdout can be captured by shell functions
+        let mut tty = File::options().read(true).write(true).open("/dev/tty")?;
+        tty.write_all(b"\x1b[?1049h")?; // enter alternate screen
+        tty.flush()?;
         enable_raw_mode()?;
-        stdout().execute(EnterAlternateScreen)?;
-        let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
+        let mut terminal = Terminal::new(CrosstermBackend::new(tty))?;
 
         let result = loop {
             terminal.draw(|f| self.render(f))?;
@@ -116,7 +119,10 @@ impl TuiPicker {
         };
 
         disable_raw_mode()?;
-        stdout().execute(LeaveAlternateScreen)?;
+        // Leave alternate screen via tty
+        let mut tty = File::options().write(true).open("/dev/tty")?;
+        tty.write_all(b"\x1b[?1049l")?;
+        tty.flush()?;
         Ok(result)
     }
 
