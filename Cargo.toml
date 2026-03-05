@@ -4,7 +4,7 @@ version = "0.3.4"
 edition = "2021"
 description = "A persistent directory history tool with interactive TUI picker"
 license = "MIT"
-repository = "https://github.com/YOUR_USER/trod"
+repository = "https://github.com/yestheboxer/trod"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
