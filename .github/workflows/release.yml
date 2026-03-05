@@ -84,13 +84,25 @@ jobs:
     needs: release
     runs-on: ubuntu-latest
     steps:
-      - name: Update Homebrew formula
-        uses: dawidd6/action-homebrew-bump-formula@v4
-        continue-on-error: true
-        with:
-          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-          tap: yestheboxer/homebrew-trod
-          formula: trod
-          tag: ${{ github.ref_name }}
-          revision: ${{ github.sha }}
-          force: true
+      - name: Download source tarball and compute SHA256
+        run: |
+          curl -sL "https://github.com/yestheboxer/trod/archive/refs/tags/${{ github.ref_name }}.tar.gz" -o source.tar.gz
+          SHA256=$(sha256sum source.tar.gz | cut -d' ' -f1)
+          echo "sha256=$SHA256" >> $GITHUB_ENV
+          echo "version=${{ github.ref_name }}" >> $GITHUB_ENV
+
+      - name: Clone homebrew-trod tap
+        run: |
+          git clone https://x-access-token:${{ secrets.HOMEBREW_TAP_TOKEN }}@github.com/yestheboxer/homebrew-trod.git tap
+
+      - name: Update formula
+        run: |
+          VERSION="${version#v}"
+          cd tap
+          sed -i "s|url \".*\"|url \"https://github.com/yestheboxer/trod/archive/refs/tags/${version}.tar.gz\"|" Formula/trod.rb
+          sed -i "s|sha256 \".*\"|sha256 \"${sha256}\"|" Formula/trod.rb
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/trod.rb
+          git commit -m "Update trod to ${version}"
+          git push
