@@ -160,6 +160,7 @@ fn print_init(shell: &Shell) {
 __trod_hook() {{ command trod add "$PWD"; }}
 PROMPT_COMMAND="__trod_hook;${{PROMPT_COMMAND}}"
 
+unalias td 2>/dev/null
 td() {{
   case "$1" in
     add|list|forget|clean|stats|import|init)
@@ -201,6 +202,7 @@ autoload -U add-zsh-hook
 __trod_hook() {{ command trod add "$PWD" }}
 add-zsh-hook chpwd __trod_hook
 
+unalias td 2>/dev/null
 td() {{
   case "$1" in
     add|list|forget|clean|stats|import|init)
