@@ -19,6 +19,10 @@ pub struct Cli {
     #[arg(long)]
     pub print: bool,
 
+    /// Print the nth previous directory to stdout (used by shell function)
+    #[arg(long, value_name = "N")]
+    pub print_back: Option<usize>,
+
     /// Custom database path
     #[arg(long, global = true)]
     pub db: Option<PathBuf>,

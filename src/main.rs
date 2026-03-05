@@ -70,6 +70,14 @@ fn main() -> Result<()> {
         Some(Command::Import { source: _ }) => {
             eprintln!("Import not yet implemented");
         }
+        None if cli.print_back.is_some() => {
+            let db = open_db(&cli)?;
+            let n = cli.print_back.unwrap();
+            match db.back(n)? {
+                Some(path) => println!("{}", path),
+                None => eprintln!("No directory {} steps back in history", n),
+            }
+        }
         None => {
             let db = open_db(&cli)?;
             let entries = db.list_recent(cli.limit.unwrap_or(500))?;
@@ -152,7 +160,30 @@ fn print_init(shell: &Shell) {
 __trod_hook() {{ command trod add "$PWD"; }}
 PROMPT_COMMAND="__trod_hook;${{PROMPT_COMMAND}}"
 
-alias td=trod
+td() {{
+  case "$1" in
+    add|list|forget|clean|stats|import|init)
+      command trod "$@"
+      ;;
+    back)
+      local dir
+      dir=$(command trod --print-back "${{2:-1}}")
+      if [[ -n "$dir" ]]; then
+        cd "$dir" || return
+      fi
+      ;;
+    "")
+      local dir
+      dir=$(command trod --print)
+      if [[ -n "$dir" ]]; then
+        cd "$dir" || return
+      fi
+      ;;
+    *)
+      command trod "$@"
+      ;;
+  esac
+}}
 
 __trod_pick() {{
   local dir
@@ -170,7 +201,30 @@ autoload -U add-zsh-hook
 __trod_hook() {{ command trod add "$PWD" }}
 add-zsh-hook chpwd __trod_hook
 
-alias td=trod
+td() {{
+  case "$1" in
+    add|list|forget|clean|stats|import|init)
+      command trod "$@"
+      ;;
+    back)
+      local dir
+      dir=$(command trod --print-back "${{2:-1}}")
+      if [[ -n "$dir" ]]; then
+        cd "$dir"
+      fi
+      ;;
+    "")
+      local dir
+      dir=$(command trod --print)
+      if [[ -n "$dir" ]]; then
+        cd "$dir"
+      fi
+      ;;
+    *)
+      command trod "$@"
+      ;;
+  esac
+}}
 
 trod-pick() {{
   local dir
