@@ -203,7 +203,7 @@ __trod_hook() {{ command trod add "$PWD" }}
 add-zsh-hook chpwd __trod_hook
 
 unalias td 2>/dev/null
-td() {{
+function td {{
   case "$1" in
     add|list|forget|clean|stats|import|init)
       command trod "$@"
@@ -228,7 +228,7 @@ td() {{
   esac
 }}
 
-trod-pick() {{
+function trod-pick {{
   local dir
   dir=$(command trod --print)
   if [[ -n "$dir" ]]; then
