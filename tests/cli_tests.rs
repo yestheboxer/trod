@@ -68,7 +68,8 @@ fn test_init_bash() {
         .unwrap();
     let stdout = String::from_utf8(output.stdout).unwrap();
     assert!(stdout.contains("PROMPT_COMMAND"));
-    assert!(stdout.contains("td()"));
+    assert!(stdout.contains("trod()"));
+    assert!(stdout.contains("alias td=trod"));
 }
 
 #[test]
@@ -79,7 +80,8 @@ fn test_init_zsh() {
         .unwrap();
     let stdout = String::from_utf8(output.stdout).unwrap();
     assert!(stdout.contains("chpwd"));
-    assert!(stdout.contains("function td"));
+    assert!(stdout.contains("function trod"));
+    assert!(stdout.contains("alias td=trod"));
 }
 
 #[test]
